@@ -1,5 +1,6 @@
 import $ from "jquery";
 import Map from "./map.js";
+import Entities from "./entities.js";
 
 // Fallback
 window.requestAnimFrame = (() => {
@@ -17,12 +18,22 @@ window.requestAnimFrame = (() => {
 
 export default function() {
 
-	var map = Map();
+	var storage = {
+		airplanes: [],
+		runways: [],
+		parkingslots: [],
+		gates: []
+	};
+
+	var map = Map(storage);
+	var entities = Entities(storage);
 
 	// resize
 	$(window).resize(function() {
 		map.resize();
 		map.render();
+		entities.resize();
+		entities.render();
 	});
 
 };
