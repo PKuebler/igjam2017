@@ -1,6 +1,6 @@
 import $ from "jquery";
-import Map from "./map.js";
-import Entities from "./entities.js";
+import Map from "./graphics/map.js";
+import Entities from "./graphics/entities.js";
 
 // Fallback
 window.requestAnimFrame = (() => {
@@ -16,8 +16,10 @@ window.requestAnimFrame = (() => {
 	);
 })();
 
+// eigentliches Game
 export default function() {
 
+	// Enthält alle Daten fürs Spiel
 	var storage = {
 		airplanes: [],
 		runways: [],
@@ -25,11 +27,13 @@ export default function() {
 		gates: []
 	};
 
+	// Erzeugt die Grafik Layer
 	var map = Map(storage);
 	var entities = Entities(storage);
 
-	// resize
+	// resize vom Browser
 	$(window).resize(function() {
+		// zeichne neu
 		map.resize();
 		map.render();
 		entities.resize();

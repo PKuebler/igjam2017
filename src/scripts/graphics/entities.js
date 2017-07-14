@@ -1,6 +1,7 @@
 import $ from "jquery";
 
-export default function Map(storage) {
+// alles das sich bewegt
+export default function Entities(storage) {
 
 	function resize() {
 		ctx.canvas.width = dom.width();
@@ -12,14 +13,14 @@ export default function Map(storage) {
 		ctx.strokeStyle = "#ffa500";
 		ctx.lineWidth = 4;
 		ctx.beginPath();
-		ctx.moveTo(20, 20);
-		ctx.lineTo(20, 50);
-		ctx.moveTo(50, 30);
-		ctx.lineTo(10, 50);
+		ctx.moveTo(210, 210);
+		ctx.lineTo(210, 510);
+		ctx.moveTo(510, 310);
+		ctx.lineTo(110, 510);
 		ctx.stroke();
 
 		ctx.fillStyle = "rgba(100,20,150,0.5)";
-		ctx.fillRect(100, 100, 50, 50);
+		ctx.fillRect(300, 300, 50, 50);
 	}
 
 	// Init
@@ -31,6 +32,7 @@ export default function Map(storage) {
 	resize();
 	render();
 
+	// public functions
 	return {
 		render,
 		resize
