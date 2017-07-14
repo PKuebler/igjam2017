@@ -1,6 +1,5 @@
 // rollup.config.dev.js
 import resolve from 'rollup-plugin-node-resolve';
-import eslint from 'rollup-plugin-eslint';
 import babel from 'rollup-plugin-babel';
 import serve from 'rollup-plugin-serve';
 import livereload from 'rollup-plugin-livereload';
@@ -14,7 +13,6 @@ export default {
 	sourceMap: 'inline',
 	moduleName: 'game',
 	plugins: [
-		eslint({}),
 		replace({
 			'process.env.NODE_ENV': JSON.stringify( 'production' )
 		}),
