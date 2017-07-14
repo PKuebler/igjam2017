@@ -31,6 +31,18 @@ export default function() {
 	var map = Map(storage);
 	var entities = Entities(storage);
 
+	// Erzeuge Gameloop
+	function tick(timestamp) {
+		// Tick
+
+		entities.render();
+
+		requestAnimationFrame(tick);
+	}
+
+	// start
+	tick();
+
 	// resize vom Browser
 	$(window).resize(function() {
 		// zeichne neu
