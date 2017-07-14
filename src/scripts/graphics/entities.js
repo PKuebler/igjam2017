@@ -19,8 +19,11 @@ export default function Entities(storage) {
 		ctx.lineTo(110, 510);
 		ctx.stroke();
 
-		ctx.fillStyle = "rgba(100,20,150,0.5)";
-		ctx.fillRect(300, 300, 50, 50);
+		ctx.fillStyle = "#ffffff";
+
+		storage.airplanes.forEach((airplane) => {
+			ctx.fillRect(airplane.pos.x, airplane.pos.y, 10, 10);
+		});
 	}
 
 	// Init
