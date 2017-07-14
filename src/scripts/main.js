@@ -1,4 +1,5 @@
 import $ from "jquery";
+import Map from "./map.js";
 
 // Fallback
 window.requestAnimFrame = (() => {
@@ -15,5 +16,13 @@ window.requestAnimFrame = (() => {
 })();
 
 export default function() {
+
+	var map = Map();
+
+	// resize
+	$(window).resize(function() {
+		map.resize();
+		map.render();
+	});
 
 };
