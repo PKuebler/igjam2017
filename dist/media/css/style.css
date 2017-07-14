@@ -1,0 +1,17 @@
+body {
+	background: rgb(49,52,64);
+}
+
+.wrapper {
+	position: absolute;
+	left: 0px;
+	top: 0px;
+	right: 0px;
+	bottom: 0px;
+}
+
+canvas {
+	position: absolute;
+	left: 0px
+	top: 0px;
+}

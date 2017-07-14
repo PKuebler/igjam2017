@@ -9,3 +9,11 @@ npm install
 # Starten
 
 npm start
+
+# Ordner:
+
+## Graphics
+
+Alle Layer zum Rendern von Objekten
+
+## Logic
