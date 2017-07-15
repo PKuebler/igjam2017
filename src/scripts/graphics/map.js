@@ -19,8 +19,11 @@ export default function Map(storage) {
 		ctx.lineTo(10, 50);
 		ctx.stroke();
 
+		// landebahn
 		ctx.fillStyle = "rgba(100,20,150,0.5)";
-		ctx.fillRect(100, 100, 50, 50);
+		storage.runways.forEach((runway) => {
+			ctx.fillRect(runway.pos.x, runway.pos.y, runway.pos.w, runway.pos.h);			
+		});
 	}
 
 	// Init

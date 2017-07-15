@@ -30,7 +30,10 @@ export default function() {
 			circleRadiusStart: Math.floor(((dom.width() < dom.height())?dom.width():dom.height())),
 		},
 		airplanes: [],
-		runways: [],
+		runways: [{
+			pos: { x: 100, y: 100, w: 200, h: 50 },
+			airplanes: []
+		}],
 		parkingslots: [],
 		gates: []
 	};
