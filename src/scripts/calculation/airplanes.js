@@ -273,7 +273,7 @@ export default function(storage) {
 
 		// start position
 		airplane.pos.x = Math.floor(
-					storage.config.circleCenter.x + 
+					storage.config.circleCenter.x +
 					airplane.currentCircleDistance * Math.cos(airplane.currentDegress)
 				);
 		airplane.pos.y = Math.floor(
@@ -322,11 +322,11 @@ export default function(storage) {
 
 			// weg
 			if (airplane.command == "bye" &&
-				(airplane.pos.x < 0 || 
-				airplane.pos.y < 0 || 
-				airplane.pos.x > storage.config.size.w || 
+				(airplane.pos.x < 0 ||
+				airplane.pos.y < 0 ||
+				airplane.pos.x > storage.config.size.w ||
 				airplane.pos.y > storage.config.size.h)) {
-				storage.airplanes.splice(index, 1);				
+				storage.airplanes.splice(index, 1);
 			}
 
 

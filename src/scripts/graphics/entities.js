@@ -19,7 +19,8 @@ export default function Entities(storage) {
 			ctx.fillRect(airplane.pos.x, airplane.pos.y, 10, 10);
 			ctx.save();
 			ctx.beginPath();
-			ctx.translate(airplane.pos.x, airplane.pos.y);
+			ctx.translate(airplane.pos.x+5, airplane.pos.y-15);
+			ctx.scale(0.5, 0.5);
 			ctx.rotate(airplane.viewDirection);
 			ctx.moveTo(0 ,0);
 			ctx.lineTo(5,0);
