@@ -80,6 +80,9 @@ export default function(storage) {
 	// incoming
 	// ============================
 	function incoming(airplane) {
+		// im kreis fliegen
+		airplane.currentDegress = (airplane.currentDegress + 0.004) % fullDegress;
+
 		// kreis kleiner ziehen
 		airplane.currentCircleDistance = Math.max(
 			airplane.currentCircleDistance - 1,
@@ -95,11 +98,11 @@ export default function(storage) {
 		// start position
 		airplane.pos.x = Math.floor(
 					storage.config.circleCenter.x + 
-					airplane.currentCircleDistance * Math.cos(airplane.incomingDegress)
+					airplane.currentCircleDistance * Math.cos(airplane.currentDegress)
 				);
 		airplane.pos.y = Math.floor(
 					storage.config.circleCenter.y +
-					airplane.currentCircleDistance * Math.sin(airplane.incomingDegress)
+					airplane.currentCircleDistance * Math.sin(airplane.currentDegress)
 				);
 
 	}
