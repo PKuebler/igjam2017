@@ -12,7 +12,6 @@ export default function Entities(storage) {
 		ctx.clearRect(0, 0, ctx.canvas.width, ctx.canvas.height);
 		ctx.strokeStyle = "#FFFFFF";
 		ctx.lineWidth = 4;
-		ctx.stroke();
 		ctx.fillStyle = "#ffffff";
 
 		storage.airplanes.forEach((airplane) => {
@@ -45,8 +44,9 @@ export default function Entities(storage) {
 			ctx.lineTo(-10, 10);
 			ctx.lineTo(-5, 0);
 			ctx.lineTo(0, 0);
-										 ctx.closePath();
-										 ctx.stroke();
+			ctx.closePath();
+			//ctx.stroke();
+			ctx.fill();
 			ctx.restore();
 		});
 	}

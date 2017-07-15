@@ -40,6 +40,7 @@ export default function(storage) {
 			gasoline: storage.config.maxAirplaneGasoline,
 			onGround: false,
 			destroyed: false,
+			viewDirection: 0,
 
 			// loading
 		 	newPassenger: getRandomInt(100,300),
@@ -91,9 +92,6 @@ export default function(storage) {
 	function incoming(delta, airplane) {
 		// im kreis fliegen
 		airplane.currentDegress = (airplane.currentDegress + (storage.config.flyspeed * delta)) % fullDegress;
-
-		//die richtung des FLugzeugs
-		airplane.viewDirection = 0;
 
 		// kreis kleiner ziehen
 		airplane.currentCircleDistance = Math.max(
@@ -270,8 +268,8 @@ export default function(storage) {
 		airplane.currentCircleDistance++;
 
 		// start position
-		airplane.pos.x = Math.floor(airplane.pos.x + 1 * Math.cos(airplane.currentDegress));
-		airplane.pos.y = Math.floor(airplane.pos.y + 1 * Math.sin(airplane.currentDegress));
+		airplane.pos.x = Math.floor(airplane.pos.x + (delta * storage.config.flyspeed) * Math.cos(airplane.currentDegress));
+		airplane.pos.y = Math.floor(airplane.pos.y + (delta * storage.config.flyspeed) * Math.sin(airplane.currentDegress));
 	}
 
 
