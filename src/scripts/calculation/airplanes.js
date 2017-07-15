@@ -53,7 +53,7 @@ export default function(storage) {
 		        (a.pos.y > (b.pos.y + b.size.h)) ||
 		        ((a.pos.x + a.size.w) < b.pos.x) ||
 		        (a.pos.x > (b.pos.x + b.size.w))
-		    );		
+		    );
 	}
 	function collision() {
 		storage.airplanes.forEach((airplane) => {
@@ -83,6 +83,9 @@ export default function(storage) {
 		// im kreis fliegen
 		airplane.currentDegress = (airplane.currentDegress + 0.004) % fullDegress;
 
+		//die richtung des FLugzeugs
+		airplane.viewDirection = 0;
+
 		// kreis kleiner ziehen
 		airplane.currentCircleDistance = Math.max(
 			airplane.currentCircleDistance - 1,
@@ -97,7 +100,7 @@ export default function(storage) {
 
 		// start position
 		airplane.pos.x = Math.floor(
-					storage.config.circleCenter.x + 
+					storage.config.circleCenter.x +
 					airplane.currentCircleDistance * Math.cos(airplane.currentDegress)
 				);
 		airplane.pos.y = Math.floor(
@@ -116,12 +119,12 @@ export default function(storage) {
 
 		// neue position ausrechnen
 		airplane.pos.x = Math.floor(
-			storage.config.circleCenter.x + 
-			(storage.config.circleRadius + airplane.randomCircleDistance) * 
+			storage.config.circleCenter.x +
+			(storage.config.circleRadius + airplane.randomCircleDistance) *
 			Math.cos(airplane.currentDegress)
 		);
 		airplane.pos.y = Math.floor(
-			storage.config.circleCenter.y + 
+			storage.config.circleCenter.y +
 			(storage.config.circleRadius + airplane.randomCircleDistance) *
 			Math.sin(airplane.currentDegress)
 		);
@@ -177,7 +180,7 @@ export default function(storage) {
 		// ============================
 		if (passedTime > storage.config.spawntime) {
 			storage.airplanes.push(createPlane());
-	
+
 			lastSpawn = timestamp;
 		}
 
@@ -194,8 +197,8 @@ export default function(storage) {
 			// sprit berechnung
 			// ============================
 			if (!airplane.onGround) {
-				airplane.gasoline -= 0.01;				
-	
+				airplane.gasoline -= 0.01;
+
 				// flugzeug leer?
 				if (airplane.gasoline <= 0) {
 					// explosion
@@ -229,7 +232,7 @@ export default function(storage) {
 			// collision -> error -> runway blocken
 			// stehen bleiben und warten
 		});
-	
+
 		// ============================
 		// collision detection
 		// ============================
