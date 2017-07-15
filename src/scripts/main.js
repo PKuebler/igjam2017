@@ -1,6 +1,7 @@
 import $ from "jquery";
 import Map from "./graphics/map.js";
 import Entities from "./graphics/entities.js";
+import Chemtrails from "./graphics/chemtrails.js";
 import Airplanes from "./calculation/airplanes.js";
 import Places from "./calculation/places.js";
 
@@ -34,11 +35,15 @@ export default function() {
 			spawntime: 4000, // airplane alle 10 sek
 			circleCenter: { x: 0, y: 0 }, // Kreis für warteschlange mitte
 			circleRadius: 0, // Radius für wateschlangen Kreis
-			maxAirplaneGasoline: 300,
+			maxAirplaneGasoline: 150,
+			gasolineUsage: 0.1,
 			flyspeed: 0.0004,
 			boardingSpeed: 0.05,
 			size: { w: dom.width(), h: dom.height() }
 		},
+		currentMousePos: { x: -1, y: -1 },
+		hoverObject: null,
+		selectedObject: null,
 		airplanes: [],
 		runways: [],
 		parkingslots: [],
@@ -64,6 +69,7 @@ export default function() {
 	// ============================
 	// Erzeugt die Grafik Layer
 	// ============================
+	var chemtrails = Chemtrails(storage);
 	var map = Map(storage);
 	var entities = Entities(storage);
 
@@ -77,10 +83,10 @@ export default function() {
 	// füge einen platz hinzu
 	// ============================
 	// todo: anpassen an browsergröße?
-	storage.runways.push(places.createRunway(Math.floor(dom.width()/2)-120, Math.floor(dom.height()/2), 90 * Math.PI / 180));
-	storage.gates.push(places.createGate(Math.floor(dom.width()/2)+50, Math.floor(dom.height()/2)-75, 0));
-	storage.gates.push(places.createGate(Math.floor(dom.width()/2)+50, Math.floor(dom.height()/2), 0));
-	storage.gates.push(places.createGate(Math.floor(dom.width()/2)+50, Math.floor(dom.height()/2)+75, 0));
+	storage.runways.push(places.createRunway(0, Math.floor(dom.width()/2)-120, Math.floor(dom.height()/2), 90 * Math.PI / 180));
+	storage.gates.push(places.createGate(0, Math.floor(dom.width()/2)+100, Math.floor(dom.height()/2)-75, 0));
+	storage.gates.push(places.createGate(1, Math.floor(dom.width()/2)+100, Math.floor(dom.height()/2), 0));
+	storage.gates.push(places.createGate(2, Math.floor(dom.width()/2)+100, Math.floor(dom.height()/2)+75, 0));
 
 	// ============================
 	// update map
@@ -91,6 +97,7 @@ export default function() {
 	// ============================
 	// Erzeuge Gameloop
 	// ============================
+	var lastChemtrails = 0;
 	function tick(timestamp) {
 		// Tick
 
@@ -98,6 +105,10 @@ export default function() {
 		airplanes.update(timestamp);
 
 		// render
+		if (timestamp-lastChemtrails >= 100) {
+			lastChemtrails = timestamp;
+			chemtrails.render();
+		}
 		entities.render();
 
 		requestAnimationFrame(tick);
@@ -119,18 +130,59 @@ export default function() {
 		map.render();
 		entities.resize();
 		entities.render();
+		chemtrails.resize();
+	});
+
+	// ============================
+	// mouse position
+	// ============================
+    $(document).mousemove(function(event) {
+        storage.currentMousePos.x = event.pageX;
+        storage.currentMousePos.y = event.pageY;
+    });
+
+    $(document).on('click', function(event) {
+	    if (event.which == 1) {
+	    	if (storage.hoverObject != null) {
+	    		console.log(storage.hoverObject);
+
+	    		// Flugzeug oder Leer => Flugzeug
+	    		if (storage.hoverObject.type == "airplane" && (storage.selectedObject == null || storage.selectedObject.type == "airplane")) {
+					// wechsel flugzeug
+			    	storage.selectedObject = storage.hoverObject;
+	    		} else if (storage.selectedObject.type == "airplane" && storage.hoverObject.type == "runway" && storage.selectedObject.command == "circle") {
+		    		// Flugzeug && circle => Landebahn
+					storage.selectedObject.command = "goLanding";
+					storage.selectedObject.commandIndex = storage.hoverObject.i;
+	    		} else if (storage.selectedObject.type == "airplane" && storage.hoverObject.type == "gate" && storage.selectedObject.command == "landing" && storage.selectedObject.commandStage > 0) {
+	    			// schon gelandet -> zum gate
+					storage.selectedObject.command = "goToGate";
+					storage.selectedObject.commandIndex = storage.hoverObject.i;
+	    		} else if (storage.selectedObject.type == "airplane" && storage.hoverObject.type == "runway" && storage.selectedObject.command == "boarding" && storage.selectedObject.commandStage == 2) {
+	    			// boarding fertig -> zur landebahn
+					storage.selectedObject.command = "takeoff";
+					storage.selectedObject.commandStage = 0;
+					storage.selectedObject.commandIndex = 0;	    			
+	    		}
+	    	}
+	    }
+    });
+
+    $(document).on("contextmenu", function(e) {
+    	storage.selectedObject = null;
+	    return false;
 	});
 
 	// ============================
 	// testweise einen landen lassen
 	// ============================
-	var landingIndex = 0;
-	setInterval(() => {
-		if (storage.airplanes[landingIndex].command == "circle") {
-			storage.airplanes[landingIndex].command = "goLanding";
-			storage.airplanes[landingIndex].commandIndex = 0;
-			landingIndex++;
-		}
-	}, 12000);
+//	var landingIndex = 0;
+//	setInterval(() => {
+//		if (storage.airplanes[landingIndex].command == "circle") {
+//			storage.airplanes[landingIndex].command = "goLanding";
+//			storage.airplanes[landingIndex].commandIndex = 0;
+//			landingIndex++;
+//		}
+//	}, 12000);
 
 };

@@ -4,15 +4,16 @@ export default function Places(storage) {
 	// ============================
 	// alle 3 objekte haben eine position, und einen winkel. größe ist fest definiert oder responsive
 	// ============================
-	function createObject(x,y,a) {
+	function createObject(i, x,y,a) {
 		return {
+			i,
 			pos: {x, y},
-			a: a // angle 
+			a // angle 
 		};
 	}
 
-	function createRunway(x,y,a) {
-		var obj = createObject(x,y,a);
+	function createRunway(i,x,y,a) {
+		var obj = createObject(i,x,y,a);
 
 		var runwayLength = Math.floor(200/2);
 
@@ -38,12 +39,28 @@ export default function Places(storage) {
 			)			
 		};
 
+		obj.type = "runway";
+
 		return obj;
 	}
 
+	function createGate(i,x,y,a) {
+		var obj = createObject(i,x,y,a);
+
+		obj.type = "gate";
+		return obj;
+	}
+
+	function createPark(i,x,y,a) {
+		var obj = createObject(i,x,y,a);
+
+		obj.type = "park";
+		return obj;		
+	}
+
 	return {
-		createGate: createObject,
+		createGate: createGate,
 		createRunway: createRunway,
-		createPark: createObject
+		createPark: createPark
 	}
 }

@@ -23,12 +23,16 @@ export default function Map(storage) {
 		// ============================
 		// landebahn
 		// ============================
+		ctx.textBaseline="top"; 
+		ctx.font="10px 'Press Start 2P'";
 		ctx.strokeStyle = "rgb(255,255,255)";
+		ctx.fillStyle = "rgb(255,255,255)";
 		storage.runways.forEach((runway) => {
 			ctx.save();
 			// todo: bugfix rotation
 			ctx.translate(runway.pos.x, runway.pos.y);
 			ctx.rotate(runway.a);
+			ctx.fillText("Runway", -25, 32);
 			ctx.beginPath();
 			ctx.rect(-100, -25, 200, 50);
 			ctx.moveTo(-95, -20);
@@ -75,6 +79,7 @@ export default function Map(storage) {
 		// gates
 		// ============================
 		ctx.strokeStyle = "#ffa500";
+		ctx.fillStyle = "#ffa500";
 		ctx.lineWidth = 2;
 		storage.gates.forEach((gate) => {
 			ctx.save();
@@ -83,6 +88,7 @@ export default function Map(storage) {
 			ctx.rotate(gate.a);
 			ctx.beginPath();
 			ctx.rect(-25, -25, 50, 50);
+			ctx.fillText("Gate", -25, 32);
 			ctx.stroke();
 			ctx.restore();
 		});

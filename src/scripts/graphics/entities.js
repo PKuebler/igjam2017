@@ -15,7 +15,14 @@ export default function Entities(storage) {
 		ctx.fillStyle = "#ffffff";
 
 		storage.airplanes.forEach((airplane) => {
+			// ============================
+			// airplane
+			// ============================
 			//ctx.fillRect(airplane.pos.x, airplane.pos.y, 10, 10);
+			if (airplane.isHover) {
+				ctx.fillStyle = "#ff0000";
+			}
+
 			ctx.save();
 			ctx.beginPath();
 			ctx.translate(airplane.pos.x, airplane.pos.y);
@@ -49,7 +56,71 @@ export default function Entities(storage) {
 //			ctx.stroke();
 			ctx.fill();
 			ctx.restore();
+
+			if (airplane.isHover) {
+				ctx.fillStyle = "#ffffff";
+			}
 		});
+
+		// ============================
+		// sprit
+		// ============================
+		ctx.fillStyle = "rgb(155,158,163)";
+		ctx.strokeStyle = "rgb(155,158,163)";
+		ctx.lineWidth = 2;
+		storage.airplanes.forEach((airplane) => {
+			if (!airplane.onGround) {
+				var h = Math.floor((airplane.gasoline / storage.config.maxAirplaneGasoline) * 20);
+				ctx.fillRect(airplane.pos.x + 35, airplane.pos.y - h, 7, h);
+				ctx.beginPath();
+				ctx.rect(airplane.pos.x + 35, airplane.pos.y - 20, 7, 20);			
+				ctx.stroke();
+			} else if (airplane.command == "boarding") {
+				var h = Math.floor((airplane.passenger / airplane.newPassenger) * 20);
+				ctx.fillRect(airplane.pos.x + 35, airplane.pos.y - h, 7, h);
+				ctx.beginPath();
+				ctx.rect(airplane.pos.x + 35, airplane.pos.y - 20, 7, 20);			
+				ctx.stroke();				
+			}
+		});
+
+		// ============================
+		// selected object
+		// ============================
+    	if (storage.selectedObject != null) {
+    		var obj = storage.selectedObject;
+
+    		if (obj.destroyed) {
+    			storage.selectedObject = null;
+    			return;
+    		}
+
+			ctx.strokeStyle = "#ffa500";
+			ctx.lineWidth = 2;
+			ctx.beginPath();
+			// links
+			ctx.moveTo(obj.pos.x - obj.size.w, obj.pos.y - obj.size.h);
+			ctx.lineTo(obj.pos.x - obj.size.w, obj.pos.y - obj.size.h + Math.floor(obj.size.h/3));
+			ctx.moveTo(obj.pos.x - obj.size.w, obj.pos.y + obj.size.h - Math.floor(obj.size.h/3));
+			ctx.lineTo(obj.pos.x - obj.size.w, obj.pos.y + obj.size.h);
+			// oben
+			ctx.moveTo(obj.pos.x - obj.size.w, obj.pos.y - obj.size.h);
+			ctx.lineTo(obj.pos.x - obj.size.w + Math.floor(obj.size.h/3), obj.pos.y - obj.size.h);
+			ctx.moveTo(obj.pos.x + obj.size.w - Math.floor(obj.size.h/3), obj.pos.y - obj.size.h);
+			ctx.lineTo(obj.pos.x + obj.size.w, obj.pos.y - obj.size.h);
+			// rechts
+			ctx.moveTo(obj.pos.x + obj.size.w, obj.pos.y - obj.size.h);
+			ctx.lineTo(obj.pos.x + obj.size.w, obj.pos.y - obj.size.h + Math.floor(obj.size.h/3));
+			ctx.moveTo(obj.pos.x + obj.size.w, obj.pos.y + obj.size.h - Math.floor(obj.size.h/3));
+			ctx.lineTo(obj.pos.x + obj.size.w, obj.pos.y + obj.size.h);
+			// unten
+			ctx.moveTo(obj.pos.x - obj.size.w, obj.pos.y + obj.size.h);
+			ctx.lineTo(obj.pos.x - obj.size.w + Math.floor(obj.size.w/3), obj.pos.y + obj.size.h);
+			ctx.moveTo(obj.pos.x + obj.size.w - Math.floor(obj.size.w/3), obj.pos.y + obj.size.h);
+			ctx.lineTo(obj.pos.x + obj.size.w, obj.pos.y + obj.size.h);
+			ctx.stroke();
+    	}
+
 	}
 
 	// Init

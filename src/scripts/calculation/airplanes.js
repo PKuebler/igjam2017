@@ -1,3 +1,5 @@
+import $ from "jquery";
+
 function getRandomArbitrary(min, max) {
 	return Math.random() * (max - min) + min;
 }
@@ -25,8 +27,10 @@ export default function(storage) {
 			id: nextId++,
 			name: "Airplane",
 			pos: { x: 0, y: 0 },
-			size: { w: 10, h: 10},
+			size: { w: 40, h: 40},
 			lastPos: { x: 0, y: 0 },
+			isHover: false,
+			type: "airplane",
 
 			// in / out
 			incomingDegress,
@@ -42,11 +46,11 @@ export default function(storage) {
 			onGround: false,
 			destroyed: false,
 			viewDirection: 0,
+			lastCalculationAngels: 0,
 
 			// loading
 		 	newPassenger: getRandomInt(100,300),
 		 	passenger: getRandomInt(100,300),
-
 
 			// action
 			command: "incoming",
@@ -163,7 +167,7 @@ export default function(storage) {
 			ty = target.y - airplane.pos.y,
 		    dist = Math.sqrt(tx*tx+ty*ty);
 
-		var speed = 1;
+		var speed = (airplane.commandStage == 0)?2:1;
 
 		var velX = (tx/dist)*speed;
 		var velY = (ty/dist)*speed;
@@ -177,8 +181,6 @@ export default function(storage) {
 				airplane.commandStage++;
 			} else {
 				// debug!!!!!!!
-				airplane.command = "goToGate";
-				airplane.commandIndex = getRandomInt(1,3)-1;
 			}
 		}
 	}
@@ -222,9 +224,8 @@ export default function(storage) {
 			airplane.passenger = Math.min(airplane.newPassenger, airplane.passenger+(delta*storage.config.boardingSpeed));
 			if (airplane.passenger == airplane.newPassenger) {
 				// finish
-				airplane.command = "takeoff";
-				airplane.commandStage = 0;
-				airplane.commandIndex = 0;
+				airplane.gasoline = storage.config.maxAirplaneGasoline;
+				airplane.commandStage = 2;
 			}
 		}
 	}
@@ -266,7 +267,7 @@ export default function(storage) {
 	// ============================
 	function bye(delta, airplane) {
 		// kreis größer ziehen
-		airplane.currentCircleDistance++;
+		airplane.currentCircleDistance += 2;
 
 		// start position
 		airplane.pos.x = Math.floor(airplane.pos.x + (delta * storage.config.flyspeed) * Math.cos(airplane.currentDegress));
@@ -276,7 +277,6 @@ export default function(storage) {
 
 	// spawn counter
 	var lastSpawn = 0;
-
 
 	// ============================
 	// update
@@ -303,10 +303,15 @@ export default function(storage) {
 		// ============================
 		// position / commands update
 		// ============================
+		var isHover = null;
 		storage.airplanes.forEach((airplane, index) => {
 			// airplane ist kaputt
 			if (airplane.destroyed) {
-				storage.crashedPlanes.push(airplane);
+				storage.crashedPlanes.push({
+					x: airplane.pos.x,
+					y: airplane.pos.y,
+					c: getRandomInt(0,2)
+				});
 				storage.airplanes.splice(index, 1);
 				return; // nicht weiter berechnen
 			}
@@ -325,7 +330,7 @@ export default function(storage) {
 			// sprit berechnung
 			// ============================
 			if (!airplane.onGround) {
-				airplane.gasoline -= 0.01;
+				airplane.gasoline -= storage.config.gasolineUsage;
 
 				// flugzeug leer?
 				if (airplane.gasoline <= 0) {
@@ -340,13 +345,31 @@ export default function(storage) {
 			if (airplane.lastPos.x != airplane.pos.x || airplane.lastPos.y != airplane.pos.y) {
 				// hat sich geändert
 
-				var tx = airplane.pos.x - airplane.lastPos.x,
-					ty = airplane.pos.y - airplane.lastPos.y;
-				airplane.viewDirection = Math.atan2(ty, tx) + 90 * Math.PI / 180;
+				if (timestamp - airplane.lastCalculationAngels > 200) {
+					var tx = airplane.pos.x - airplane.lastPos.x,
+						ty = airplane.pos.y - airplane.lastPos.y;
+					airplane.viewDirection = Math.atan2(ty, tx) + 90 * Math.PI / 180;
 
-				// speicher letzte position
-				airplane.lastPos.x = airplane.pos.x;
-				airplane.lastPos.y = airplane.pos.y;
+					airplane.lastCalculationAngels = timestamp;
+
+					// speicher letzte position
+					airplane.lastPos.x = airplane.pos.x;
+					airplane.lastPos.y = airplane.pos.y;
+				}
+			}
+
+			// ============================
+			// is hover?
+			// ============================
+			airplane.isHover = (
+				storage.currentMousePos.x > airplane.pos.x - airplane.size.w &&
+				storage.currentMousePos.y > airplane.pos.y - airplane.size.h &&
+				storage.currentMousePos.x < airplane.pos.x + airplane.size.w &&
+				storage.currentMousePos.y < airplane.pos.y + airplane.size.h
+			);
+
+			if (airplane.isHover) {
+				isHover = airplane;
 			}
 
 			// ============================
@@ -408,6 +431,40 @@ export default function(storage) {
 		// ============================
 		collision();
 
+		// ============================
+		// hover
+		// ============================
+		if (isHover == null) {
+			storage.gates.forEach((gate) => {
+				if (storage.currentMousePos.x > gate.pos.x - 25 &&
+					storage.currentMousePos.y > gate.pos.y - 25 &&
+					storage.currentMousePos.x < gate.pos.x + 25 &&
+					storage.currentMousePos.y < gate.pos.y + 25) {
+					isHover = gate;
+				}
+			});
+		}
+
+		if (isHover == null) {
+			storage.runways.forEach((runway) => {
+				if (storage.currentMousePos.x > runway.pos.x - 25 &&
+					storage.currentMousePos.y > runway.pos.y - 100 &&
+					storage.currentMousePos.x < runway.pos.x + 25 &&
+					storage.currentMousePos.y < runway.pos.y + 100) {
+					isHover = runway;
+				}
+			});
+		}
+
+		if (isHover != null) {
+			if (storage.hoverObject == null) {
+				$("body").css("cursor", "pointer");
+			}
+			storage.hoverObject = isHover;
+		} else if (storage.hoverObject != null) {
+			storage.hoverObject = null;
+			$("body").css("cursor", "auto");
+		}
 	}
 
 	return {
