@@ -41,9 +41,15 @@ export default function(storage) {
 			onGround: false,
 			destroyed: false,
 
+			// loading
+		 	newPassenger: getRandomInt(100,300),
+		 	passenger: getRandomInt(100,300),
+
+
 			// action
 			command: "incoming",
-			commandIndex: null
+			commandIndex: null,
+			commandStage: 0
 		}
 	}
 
@@ -137,6 +143,7 @@ export default function(storage) {
 			if (airplane.currentDegress > runway.a - toleranz && airplane.currentDegress < runway.a + toleranz) {
 				// TODO: if runway.a == 0 - 2 = -2 => 358
 				airplane.command = "landing";
+				airplane.commandStage = 0;
 			}
 		}
 	}
@@ -148,13 +155,11 @@ export default function(storage) {
 		// activate collision
 		airplane.onGround = true;
 
-		var target = storage.runways[airplane.commandIndex];
+		var target = storage.runways[airplane.commandIndex][(airplane.commandStage == 0)?'start':'end'];
 
-		var tx = target.pos.x - airplane.pos.x,
-			ty = target.pos.y - airplane.pos.y,
-		    dist = Math.sqrt(tx*tx+ty*ty),
-    		rad = Math.atan2(ty,tx),
-			angle = rad/Math.PI * 180;
+		var tx = target.x - airplane.pos.x,
+			ty = target.y - airplane.pos.y,
+		    dist = Math.sqrt(tx*tx+ty*ty);
 
 		var speed = 1;
 
@@ -163,7 +168,117 @@ export default function(storage) {
 
 		airplane.pos.x += velX;
 		airplane.pos.y += velY;
+
+		if (dist < 2 && dist < 2 && dist > -2 && dist > -2) {
+			// finish
+			if (airplane.commandStage == 0) {
+				airplane.commandStage++;
+			} else {
+				// debug!!!!!!!
+				airplane.command = "goToGate";
+				airplane.commandIndex = getRandomInt(1,3)-1;
+			}
+		}
 	}
+
+	// ============================
+	// drive to gate
+	// ============================
+	function goToGate(delta, airplane) {
+		var target = storage.gates[airplane.commandIndex];
+
+		var tx = target.pos.x - airplane.pos.x,
+			ty = target.pos.y - airplane.pos.y,
+		    dist = Math.sqrt(tx*tx+ty*ty);
+
+		var speed = 1;
+
+		var velX = (tx/dist)*speed;
+		var velY = (ty/dist)*speed;
+
+		airplane.pos.x += velX;
+		airplane.pos.y += velY;
+
+		if (dist < 2 && dist < 2 && dist > -2 && dist > -2) {
+			// finish
+			airplane.command = "boarding";
+			airplane.commandStage = 0;
+		}
+	}
+
+	// ============================
+	// drive to gate
+	// ============================
+	function boarding(delta, airplane) {
+		if (airplane.commandStage == 0) {
+			airplane.passenger = Math.max(0, airplane.passenger-(delta*storage.config.boardingSpeed));
+
+			if (airplane.passenger == 0) {
+				airplane.commandStage = 1;
+			}
+		} else {
+			airplane.passenger = Math.min(airplane.newPassenger, airplane.passenger+(delta*storage.config.boardingSpeed));
+			if (airplane.passenger == airplane.newPassenger) {
+				// finish
+				airplane.command = "takeoff";
+				airplane.commandStage = 0;
+				airplane.commandIndex = 0;
+			}
+		}
+	}
+
+	// ============================
+	// drive to gate
+	// ============================
+	function takeoff(delta, airplane) {
+		// activate collision
+
+		var target = storage.runways[airplane.commandIndex][(airplane.commandStage == 0)?'end':'start'];
+
+		var tx = target.x - airplane.pos.x,
+			ty = target.y - airplane.pos.y,
+		    dist = Math.sqrt(tx*tx+ty*ty);
+
+		var speed = 1;
+
+		var velX = (tx/dist)*speed;
+		var velY = (ty/dist)*speed;
+
+		airplane.pos.x += velX;
+		airplane.pos.y += velY;
+
+		if (dist < 2 && dist < 2 && dist > -2 && dist > -2) {
+			// finish
+			if (airplane.commandStage == 0) {
+				airplane.commandStage++;
+			} else {
+				airplane.onGround = false;
+				airplane.command = "bye";
+			}
+		}
+	}
+	// ============================
+	// drive to gate
+	// ============================
+	function bye(delta, airplane) {
+		// im kreis fliegen
+		airplane.currentDegress = (airplane.currentDegress + (storage.config.flyspeed * delta)) % fullDegress;
+
+		// kreis kleiner ziehen
+		airplane.currentCircleDistance = airplane.currentCircleDistance + 1;
+
+
+		// start position
+		airplane.pos.x = Math.floor(
+					storage.config.circleCenter.x + 
+					airplane.currentCircleDistance * Math.cos(airplane.currentDegress)
+				);
+		airplane.pos.y = Math.floor(
+					storage.config.circleCenter.y +
+					airplane.currentCircleDistance * Math.sin(airplane.currentDegress)
+				);
+	}
+
 
 	// spawn counter
 	var lastSpawn = 0;
@@ -197,8 +312,20 @@ export default function(storage) {
 		storage.airplanes.forEach((airplane, index) => {
 			// airplane ist kaputt
 			if (airplane.destroyed) {
+				storage.crashedPlanes.push(airplane);
+				storage.airplanes.splice(index, 1);
 				return; // nicht weiter berechnen
 			}
+
+			// weg
+			if (airplane.command == "bye" &&
+				(airplane.pos.x < 0 || 
+				airplane.pos.y < 0 || 
+				airplane.pos.x > storage.config.size.w || 
+				airplane.pos.y > storage.config.size.h)) {
+				storage.airplanes.splice(index, 1);				
+			}
+
 
 			// ============================
 			// sprit berechnung
@@ -233,6 +360,34 @@ export default function(storage) {
 			// ============================
 			if (airplane.command == "landing") {
 				return landing(delta, airplane);
+			}
+
+			// ============================
+			// Zum Gate fahren
+			// ============================
+			if (airplane.command == "goToGate") {
+				return goToGate(delta, airplane);
+			}
+
+			// ============================
+			// Boarding
+			// ============================
+			if (airplane.command == "boarding") {
+				return boarding(delta, airplane);
+			}
+
+			// ============================
+			// Von Landebahn starten
+			// ============================
+			if (airplane.command == "takeoff") {
+				return takeoff(delta, airplane);
+			}
+
+			// ============================
+			// Wegfliegen
+			// ============================
+			if (airplane.command == "bye") {
+				return bye(delta, airplane);
 			}
 			// Landen bis (x | y) Box -> Eintragen in runway liste
 			// check if other airplane -> check bounding box

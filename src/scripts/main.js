@@ -35,12 +35,15 @@ export default function() {
 			circleCenter: { x: 0, y: 0 }, // Kreis für warteschlange mitte
 			circleRadius: 0, // Radius für wateschlangen Kreis
 			maxAirplaneGasoline: 300,
-			flyspeed: 0.0004
+			flyspeed: 0.0004,
+			boardingSpeed: 0.05,
+			size: { w: dom.width(), h: dom.height() }
 		},
 		airplanes: [],
 		runways: [],
 		parkingslots: [],
-		gates: []
+		gates: [],
+		crashedPlanes: []
 	};
 
 	// ============================
@@ -52,6 +55,9 @@ export default function() {
 		storage.config.circleCenter.y = Math.floor(dom.height()/2);
 		storage.config.circleRadius = Math.floor(((dom.width() < dom.height())?dom.width():dom.height())/2)-80; // Radius für wateschlangen Kreis
 		storage.config.circleRadiusStart = Math.floor(((dom.width() < dom.height())?dom.width():dom.height()));
+
+		storage.config.size.w = dom.width();
+		storage.config.size.h = dom.height();
 	}
 	updateStorage();
 
@@ -71,7 +77,10 @@ export default function() {
 	// füge einen platz hinzu
 	// ============================
 	// todo: anpassen an browsergröße?
-	storage.runways.push(places.createRunway(Math.floor(dom.width()/2), Math.floor(dom.height()/2), 90 * Math.PI / 180));
+	storage.runways.push(places.createRunway(Math.floor(dom.width()/2)-120, Math.floor(dom.height()/2), 90 * Math.PI / 180));
+	storage.gates.push(places.createGate(Math.floor(dom.width()/2)+50, Math.floor(dom.height()/2)-75, 0));
+	storage.gates.push(places.createGate(Math.floor(dom.width()/2)+50, Math.floor(dom.height()/2), 0));
+	storage.gates.push(places.createGate(Math.floor(dom.width()/2)+50, Math.floor(dom.height()/2)+75, 0));
 
 	// ============================
 	// update map
