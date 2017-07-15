@@ -9,6 +9,8 @@ export default function(storage) {
 	// ============================
 	// create airplane
 	// ============================
+	var nextId = 0;
+
 	function createPlane() {
 		// einflug winkel
 		var incomingDegress = getRandomArbitrary(0, 360 * Math.PI / 180);
@@ -20,6 +22,7 @@ export default function(storage) {
 		var currentCircleDistance = 600;
 
 		return {
+			id: nextId++,
 			name: "Airplane",
 			pos: { x: 0, y: 0 },
 			size: { w: 10, h: 10},
@@ -64,8 +67,8 @@ export default function(storage) {
 			}
 			// prüfe ob es mit anderem collidiert
 			storage.airplanes.forEach((otherAirplane) => {
-				if (otherAirplane === airplane && !otherAirplane.onGround) {
-					// mit sich selbst nicht prüfen und nur mit airplanes in der luft
+				if (otherAirplane.id == airplane.id || !otherAirplane.onGround) {
+					// mit sich selbst nicht prüfen und nicht mit airplanes in der luft
 					return;
 				}
 
@@ -79,9 +82,9 @@ export default function(storage) {
 	// ============================
 	// incoming
 	// ============================
-	function incoming(airplane) {
+	function incoming(delta, airplane) {
 		// im kreis fliegen
-		airplane.currentDegress = (airplane.currentDegress + 0.004) % fullDegress;
+		airplane.currentDegress = (airplane.currentDegress + (storage.config.flyspeed * delta)) % fullDegress;
 
 		// kreis kleiner ziehen
 		airplane.currentCircleDistance = Math.max(
@@ -110,9 +113,9 @@ export default function(storage) {
 	// circle
 	// ============================
 	var fullDegress = (360 * Math.PI / 180);
-	function circle(airplane) {
+	function circle(delta, airplane) {
 		// im kreis fliegen
-		airplane.currentDegress = (airplane.currentDegress + 0.004) % fullDegress;
+		airplane.currentDegress = (airplane.currentDegress + (storage.config.flyspeed * delta)) % fullDegress;
 
 		// neue position ausrechnen
 		airplane.pos.x = Math.floor(
@@ -141,9 +144,9 @@ export default function(storage) {
 	// ============================
 	// landing
 	// ============================
-	function landing(airplane) {
+	function landing(delta, airplane) {
 		// activate collision
-//		airplane.onGround = true;
+		airplane.onGround = true;
 
 		var target = storage.runways[airplane.commandIndex];
 
@@ -169,8 +172,15 @@ export default function(storage) {
 	// ============================
 	// update
 	// ============================
+	var lastUpdate = 0;
 	function update(timestamp) {
 		var passedTime = timestamp - lastSpawn;
+
+		// ============================
+		// calc delta time
+		// ============================
+		var delta = timestamp - lastUpdate;
+		lastUpdate = timestamp;
 
 		// ============================
 		// neues flugzeug
@@ -208,21 +218,21 @@ export default function(storage) {
 			// neues flugzeug flieg in kreis
 			// ============================
 			if (airplane.command == "incoming") {
-				return incoming(airplane);
+				return incoming(delta, airplane);
 			}
 
 			// ============================
 			// flugzeug flieg im kreis -> go landing
 			// ============================
 			if (airplane.command == "circle" || airplane.command == "goLanding") {
-				return circle(airplane);
+				return circle(delta, airplane);
 			}
 
 			// ============================
 			// landen
 			// ============================
 			if (airplane.command == "landing") {
-				return landing(airplane);
+				return landing(delta, airplane);
 			}
 			// Landen bis (x | y) Box -> Eintragen in runway liste
 			// check if other airplane -> check bounding box

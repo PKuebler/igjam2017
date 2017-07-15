@@ -31,10 +31,11 @@ export default function() {
 	// ============================
 	var storage = {
 		config: {
-			spawntime: 2000, // airplane alle 10 sek
+			spawntime: 4000, // airplane alle 10 sek
 			circleCenter: { x: 0, y: 0 }, // Kreis für warteschlange mitte
 			circleRadius: 0, // Radius für wateschlangen Kreis
-			maxAirplaneGasoline: 500
+			maxAirplaneGasoline: 300,
+			flyspeed: 0.0004
 		},
 		airplanes: [],
 		runways: [],
@@ -121,6 +122,6 @@ export default function() {
 			storage.airplanes[landingIndex].commandIndex = 0;
 			landingIndex++;
 		}
-	}, 6000);
+	}, 12000);
 
 };
