@@ -126,7 +126,7 @@ export default function(storage) {
 		if (airplane.command == "goLanding") {
 			var runway = storage.runways[airplane.commandIndex];
 
-			var toleranz = (2 * Math.PI / 180);
+			var toleranz = (1 * Math.PI / 180);
 
 			if (airplane.currentDegress > runway.a - toleranz && airplane.currentDegress < runway.a + toleranz) {
 				// TODO: if runway.a == 0 - 2 = -2 => 358
@@ -139,7 +139,26 @@ export default function(storage) {
 	// landing
 	// ============================
 	function landing(airplane) {
+		// activate collision
+//		airplane.onGround = true;
 
+		var target = storage.runways[airplane.commandIndex];
+
+		var tx = target.pos.x - airplane.pos.x,
+			ty = target.pos.y - airplane.pos.y,
+		    dist = Math.sqrt(tx*tx+ty*ty),
+    		rad = Math.atan2(ty,tx),
+			angle = rad/Math.PI * 180;
+
+		var speed = 1;
+
+		var velX = (tx/dist)*speed;
+		var velY = (ty/dist)*speed;
+
+		airplane.pos.x += velX;
+		airplane.pos.y += velY;
+
+		console.log(velX, velY, dist);
 	}
 
 	// spawn counter
@@ -194,12 +213,16 @@ export default function(storage) {
 			// ============================
 			// flugzeug flieg im kreis -> go landing
 			// ============================
-			if (airplane.command == "circle") {
+			if (airplane.command == "circle" || airplane.command == "goLanding") {
 				return circle(airplane);
 			}
 
+			// ============================
 			// landen
-			// Landeanflug (x | y) Einleiten
+			// ============================
+			if (airplane.command == "landing") {
+				return landing(airplane);
+			}
 			// Landen bis (x | y) Box -> Eintragen in runway liste
 			// check if other airplane -> check bounding box
 			// collision -> error -> runway blocken

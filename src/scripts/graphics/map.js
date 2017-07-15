@@ -26,10 +26,10 @@ export default function Map(storage) {
 		ctx.fillStyle = "rgb(52,109,226)";
 		storage.runways.forEach((runway) => {
 			ctx.save();
-			// todo: bugfix
+			// todo: bugfix rotation
 			ctx.translate(runway.pos.x, runway.pos.y);
 			ctx.rotate(runway.a);
-			ctx.fillRect(0, 0, 200, 50);
+			ctx.fillRect(-100, -25, 200, 50);
 			ctx.restore();
 		});
 

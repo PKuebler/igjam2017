@@ -69,7 +69,7 @@ export default function() {
 	// füge einen platz hinzu
 	// ============================
 	// todo: anpassen an browsergröße?
-	storage.runways.push(places.createRunway(Math.floor(dom.width()/2)-100, Math.floor(dom.width()/2)-25, 90 * Math.PI / 180));
+	storage.runways.push(places.createRunway(Math.floor(dom.width()/2), Math.floor(dom.height()/2), 90 * Math.PI / 180));
 
 	// ============================
 	// update map
@@ -113,11 +113,13 @@ export default function() {
 	// ============================
 	// testweise einen landen lassen
 	// ============================
+	var landingIndex = 0;
 	setInterval(() => {
-		if (storage.airplanes[0].command == "circle") {
-			storage.airplanes[0].command = "goLanding";
-			storage.airplanes[0].commandIndex = 0;
+		if (storage.airplanes[landingIndex].command == "circle") {
+			storage.airplanes[landingIndex].command = "goLanding";
+			storage.airplanes[landingIndex].commandIndex = 0;
+			landingIndex++;
 		}
-	}, 4000);
+	}, 6000);
 
 };
