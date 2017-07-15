@@ -2,6 +2,7 @@ import $ from "jquery";
 import Map from "./graphics/map.js";
 import Entities from "./graphics/entities.js";
 import Airplanes from "./calculation/airplanes.js";
+import Places from "./calculation/places.js";
 
 // Fallback
 window.requestAnimFrame = (() => {
@@ -25,18 +26,25 @@ export default function() {
 	var storage = {
 		config: {
 			spawntime: 2000, // airplane alle 10 sek
-			circleCenter: { x: Math.floor(dom.width()/2), y: Math.floor(dom.height()/2) }, // Kreis für warteschlange mitte
-			circleRadius: Math.floor(((dom.width() < dom.height())?dom.width():dom.height())/2)-80, // Radius für wateschlangen Kreis
-			circleRadiusStart: Math.floor(((dom.width() < dom.height())?dom.width():dom.height())),
+			circleCenter: { x: 0, y: 0 }, // Kreis für warteschlange mitte
+			circleRadius: 0, // Radius für wateschlangen Kreis
+			circleRadiusStart: 0,
 		},
 		airplanes: [],
-		runways: [{
-			pos: { x: 100, y: 100, w: 200, h: 50 },
-			airplanes: []
-		}],
+		runways: [],
 		parkingslots: [],
 		gates: []
 	};
+
+	// Berechne Fix Werte
+	function updateStorage() {
+		// warteschleifen
+		storage.config.circleCenter.x = Math.floor(dom.width()/2);
+		storage.config.circleCenter.y = Math.floor(dom.height()/2);
+		storage.config.circleRadius = Math.floor(((dom.width() < dom.height())?dom.width():dom.height())/2)-80; // Radius für wateschlangen Kreis
+		storage.config.circleRadiusStart = Math.floor(((dom.width() < dom.height())?dom.width():dom.height()));
+	}
+	updateStorage();
 
 	// Erzeugt die Grafik Layer
 	var map = Map(storage);
@@ -44,6 +52,10 @@ export default function() {
 
 	// Erzeuge Logik
 	var airplanes = Airplanes(storage);
+	var places = Places(storage);
+
+	// füge einen platz hinzu
+	storage.runways.push(places.createRunway(Math.floor(dom.width()/2)-100, Math.floor(dom.width()/2)-25, 90 * Math.PI / 180));
 
 	// Erzeuge Gameloop
 	function tick(timestamp) {
@@ -64,15 +76,19 @@ export default function() {
 	// resize vom Browser
 	$(window).resize(function() {
 		// zeichne neu
-		storage.config.circleCenter.x = Math.floor(dom.width()/2);
-		storage.config.circleCenter.y = Math.floor(dom.height()/2);
-		storage.config.circleRadius = Math.floor(((dom.width() < dom.height())?dom.width():dom.height())/2)-80; // Radius für wateschlangen Kreis
-		storage.config.circleRadiusStart = Math.floor(((dom.width() < dom.height())?dom.width():dom.height()));
+		updateStorage();
 
 		map.resize();
 		map.render();
 		entities.resize();
 		entities.render();
 	});
+
+	setInterval(() => {
+		if (storage.airplanes[0].command == "circle") {
+			storage.airplanes[0].command = "goLanding";
+			storage.airplanes[0].commandIndex = 0;
+		}
+	}, 4000);
 
 };
