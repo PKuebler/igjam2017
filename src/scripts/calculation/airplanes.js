@@ -25,7 +25,7 @@ export default function(storage) {
 			id: nextId++,
 			name: "Airplane",
 			pos: { x: 0, y: 0 },
-			size: { w: 10, h: 10},
+			size: { w: 40, h: 40},
 			lastPos: { x: 0, y: 0 },
 
 			// in / out
@@ -42,6 +42,7 @@ export default function(storage) {
 			onGround: false,
 			destroyed: false,
 			viewDirection: 0,
+			lastCalculationAngels: 0,
 
 			// loading
 		 	newPassenger: getRandomInt(100,300),
@@ -277,7 +278,6 @@ export default function(storage) {
 	// spawn counter
 	var lastSpawn = 0;
 
-
 	// ============================
 	// update
 	// ============================
@@ -340,9 +340,13 @@ export default function(storage) {
 			if (airplane.lastPos.x != airplane.pos.x || airplane.lastPos.y != airplane.pos.y) {
 				// hat sich geändert
 
-				var tx = airplane.pos.x - airplane.lastPos.x,
-					ty = airplane.pos.y - airplane.lastPos.y;
-				airplane.viewDirection = Math.atan2(ty, tx) + 90 * Math.PI / 180;
+				if (timestamp - airplane.lastCalculationAngels > 200) {
+					var tx = airplane.pos.x - airplane.lastPos.x,
+						ty = airplane.pos.y - airplane.lastPos.y;
+					airplane.viewDirection = Math.atan2(ty, tx) + 90 * Math.PI / 180;
+
+					airplane.lastCalculationAngels = timestamp;
+				}
 
 				// speicher letzte position
 				airplane.lastPos.x = airplane.pos.x;

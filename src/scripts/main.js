@@ -1,6 +1,7 @@
 import $ from "jquery";
 import Map from "./graphics/map.js";
 import Entities from "./graphics/entities.js";
+import Chemtrails from "./graphics/chemtrails.js";
 import Airplanes from "./calculation/airplanes.js";
 import Places from "./calculation/places.js";
 
@@ -34,7 +35,7 @@ export default function() {
 			spawntime: 4000, // airplane alle 10 sek
 			circleCenter: { x: 0, y: 0 }, // Kreis für warteschlange mitte
 			circleRadius: 0, // Radius für wateschlangen Kreis
-			maxAirplaneGasoline: 300,
+			maxAirplaneGasoline: 150,
 			flyspeed: 0.0004,
 			boardingSpeed: 0.05,
 			size: { w: dom.width(), h: dom.height() }
@@ -64,6 +65,7 @@ export default function() {
 	// ============================
 	// Erzeugt die Grafik Layer
 	// ============================
+	var chemtrails = Chemtrails(storage);
 	var map = Map(storage);
 	var entities = Entities(storage);
 
@@ -91,6 +93,7 @@ export default function() {
 	// ============================
 	// Erzeuge Gameloop
 	// ============================
+	var lastChemtrails = 0;
 	function tick(timestamp) {
 		// Tick
 
@@ -98,6 +101,10 @@ export default function() {
 		airplanes.update(timestamp);
 
 		// render
+		if (timestamp-lastChemtrails >= 100) {
+			lastChemtrails = timestamp;
+			chemtrails.render();
+		}
 		entities.render();
 
 		requestAnimationFrame(tick);
