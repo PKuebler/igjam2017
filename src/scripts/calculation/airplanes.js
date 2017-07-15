@@ -207,7 +207,7 @@ export default function(storage) {
 	}
 
 	// ============================
-	// drive to gate
+	// boarding
 	// ============================
 	function boarding(delta, airplane) {
 		if (airplane.commandStage == 0) {
@@ -228,12 +228,12 @@ export default function(storage) {
 	}
 
 	// ============================
-	// drive to gate
+	// takeoff
 	// ============================
 	function takeoff(delta, airplane) {
 		// activate collision
 
-		var target = storage.runways[airplane.commandIndex][(airplane.commandStage == 0)?'end':'start'];
+		var target = storage.runways[airplane.commandIndex][(airplane.commandStage == 0)?'start':'end'];
 
 		var tx = target.x - airplane.pos.x,
 			ty = target.y - airplane.pos.y,
@@ -254,29 +254,21 @@ export default function(storage) {
 			} else {
 				airplane.onGround = false;
 				airplane.command = "bye";
+				airplane.currentCircleDistance = 0;
+				airplane.currentDegress = storage.runways[airplane.commandIndex].a * (180 * Math.PI / 180);
 			}
 		}
 	}
 	// ============================
-	// drive to gate
+	// bye airplane
 	// ============================
 	function bye(delta, airplane) {
-		// im kreis fliegen
-		airplane.currentDegress = (airplane.currentDegress + (storage.config.flyspeed * delta)) % fullDegress;
-
-		// kreis kleiner ziehen
-		airplane.currentCircleDistance = airplane.currentCircleDistance + 1;
-
+		// kreis größer ziehen
+		airplane.currentCircleDistance++;
 
 		// start position
-		airplane.pos.x = Math.floor(
-					storage.config.circleCenter.x + 
-					airplane.currentCircleDistance * Math.cos(airplane.currentDegress)
-				);
-		airplane.pos.y = Math.floor(
-					storage.config.circleCenter.y +
-					airplane.currentCircleDistance * Math.sin(airplane.currentDegress)
-				);
+		airplane.pos.x = Math.floor(airplane.pos.x + 1 * Math.cos(airplane.currentDegress));
+		airplane.pos.y = Math.floor(airplane.pos.y + 1 * Math.sin(airplane.currentDegress));
 	}
 
 
