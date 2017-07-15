@@ -30,6 +30,7 @@ export default function(storage) {
 			size: { w: 40, h: 40},
 			lastPos: { x: 0, y: 0 },
 			isHover: false,
+			type: "airplane",
 
 			// in / out
 			incomingDegress,
@@ -180,8 +181,6 @@ export default function(storage) {
 				airplane.commandStage++;
 			} else {
 				// debug!!!!!!!
-				airplane.command = "goToGate";
-				airplane.commandIndex = getRandomInt(1,3)-1;
 			}
 		}
 	}
@@ -225,9 +224,7 @@ export default function(storage) {
 			airplane.passenger = Math.min(airplane.newPassenger, airplane.passenger+(delta*storage.config.boardingSpeed));
 			if (airplane.passenger == airplane.newPassenger) {
 				// finish
-				airplane.command = "takeoff";
-				airplane.commandStage = 0;
-				airplane.commandIndex = 0;
+				airplane.commandStage = 2;
 			}
 		}
 	}
@@ -309,7 +306,11 @@ export default function(storage) {
 		storage.airplanes.forEach((airplane, index) => {
 			// airplane ist kaputt
 			if (airplane.destroyed) {
-				storage.crashedPlanes.push(airplane);
+				storage.crashedPlanes.push({
+					x: airplane.pos.x,
+					y: airplane.pos.y,
+					c: getRandomInt(0,2)
+				});
 				storage.airplanes.splice(index, 1);
 				return; // nicht weiter berechnen
 			}

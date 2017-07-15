@@ -43,6 +43,7 @@ export default function() {
 		},
 		currentMousePos: { x: -1, y: -1 },
 		hoverObject: null,
+		selectedObject: null,
 		airplanes: [],
 		runways: [],
 		parkingslots: [],
@@ -82,10 +83,10 @@ export default function() {
 	// füge einen platz hinzu
 	// ============================
 	// todo: anpassen an browsergröße?
-	storage.runways.push(places.createRunway(Math.floor(dom.width()/2)-120, Math.floor(dom.height()/2), 90 * Math.PI / 180));
-	storage.gates.push(places.createGate(Math.floor(dom.width()/2)+50, Math.floor(dom.height()/2)-75, 0));
-	storage.gates.push(places.createGate(Math.floor(dom.width()/2)+50, Math.floor(dom.height()/2), 0));
-	storage.gates.push(places.createGate(Math.floor(dom.width()/2)+50, Math.floor(dom.height()/2)+75, 0));
+	storage.runways.push(places.createRunway(0, Math.floor(dom.width()/2)-120, Math.floor(dom.height()/2), 90 * Math.PI / 180));
+	storage.gates.push(places.createGate(0, Math.floor(dom.width()/2)+50, Math.floor(dom.height()/2)-75, 0));
+	storage.gates.push(places.createGate(1, Math.floor(dom.width()/2)+50, Math.floor(dom.height()/2), 0));
+	storage.gates.push(places.createGate(2, Math.floor(dom.width()/2)+50, Math.floor(dom.height()/2)+75, 0));
 
 	// ============================
 	// update map
@@ -129,6 +130,7 @@ export default function() {
 		map.render();
 		entities.resize();
 		entities.render();
+		chemtrails.resize();
 	});
 
 	// ============================
@@ -139,16 +141,47 @@ export default function() {
         storage.currentMousePos.y = event.pageY;
     });
 
+    $(document).on('click', function(event) {
+	    if (event.which == 1) {
+	    	if (storage.hoverObject != null) {
+
+	    		// Flugzeug oder Leer => Flugzeug
+	    		if (storage.hoverObject.type == "airplane" && (storage.selectedObject == null || storage.selectedObject.type == "airplane")) {
+					// wechsel flugzeug
+			    	storage.selectedObject = storage.hoverObject;
+	    		} else if (storage.selectedObject.type == "airplane" && storage.hoverObject.type == "runway" && storage.selectedObject.command == "circle") {
+		    		// Flugzeug && circle => Landebahn
+					storage.selectedObject.command = "goLanding";
+					storage.selectedObject.commandIndex = storage.hoverObject.i;
+	    		} else if (storage.selectedObject.type == "airplane" && storage.hoverObject.type == "gate" && storage.selectedObject.command == "landing" && storage.selectedObject.commandStage > 0) {
+	    			// schon gelandet -> zum gate
+					storage.selectedObject.command = "goToGate";
+					storage.selectedObject.commandIndex = storage.hoverObject.i;
+	    		} else if (storage.selectedObject.type == "airplane" && storage.hoverObject.type == "runway" && storage.selectedObject.command == "boarding" && storage.selectedObject.commandStage == 2) {
+	    			// boarding fertig -> zur landebahn
+					storage.selectedObject.command = "takeoff";
+					storage.selectedObject.commandStage = 0;
+					storage.selectedObject.commandIndex = 0;	    			
+	    		}
+	    	}
+	    }
+    });
+
+    $(document).on("contextmenu", function(e) {
+    	storage.selectedObject = null;
+	    return false;
+	});
+
 	// ============================
 	// testweise einen landen lassen
 	// ============================
-	var landingIndex = 0;
-	setInterval(() => {
-		if (storage.airplanes[landingIndex].command == "circle") {
-			storage.airplanes[landingIndex].command = "goLanding";
-			storage.airplanes[landingIndex].commandIndex = 0;
-			landingIndex++;
-		}
-	}, 12000);
+//	var landingIndex = 0;
+//	setInterval(() => {
+//		if (storage.airplanes[landingIndex].command == "circle") {
+//			storage.airplanes[landingIndex].command = "goLanding";
+//			storage.airplanes[landingIndex].commandIndex = 0;
+//			landingIndex++;
+//		}
+//	}, 12000);
 
 };

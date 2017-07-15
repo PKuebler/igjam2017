@@ -17,3 +17,13 @@ npm start
 Alle Layer zum Rendern von Objekten
 
 ## Logic
+
+
+Grün
+161,239,148
+
+Lila
+226,155,247
+
+Blau
+126,186,255
