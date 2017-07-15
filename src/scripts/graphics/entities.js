@@ -16,6 +16,10 @@ export default function Entities(storage) {
 
 		storage.airplanes.forEach((airplane) => {
 			//ctx.fillRect(airplane.pos.x, airplane.pos.y, 10, 10);
+			if (airplane.isHover) {
+				ctx.fillStyle = "#ff0000";
+			}
+
 			ctx.save();
 			ctx.beginPath();
 			ctx.translate(airplane.pos.x, airplane.pos.y);
@@ -49,6 +53,24 @@ export default function Entities(storage) {
 //			ctx.stroke();
 			ctx.fill();
 			ctx.restore();
+
+			if (airplane.isHover) {
+				ctx.fillStyle = "#ffffff";
+			}
+		});
+
+		// sprit
+		ctx.fillStyle = "rgb(155,158,163)";
+		ctx.strokeStyle = "rgb(155,158,163)";
+		ctx.lineWidth = 2;
+		storage.airplanes.forEach((airplane) => {
+			if (!airplane.onGround) {
+				var h = Math.floor((airplane.gasoline / storage.config.maxAirplaneGasoline) * 20);
+				ctx.fillRect(airplane.pos.x + 35, airplane.pos.y - h, 7, h);
+				ctx.beginPath();
+				ctx.rect(airplane.pos.x + 35, airplane.pos.y - 20, 7, 20);			
+				ctx.stroke();
+			}
 		});
 	}
 

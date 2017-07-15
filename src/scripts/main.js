@@ -36,10 +36,13 @@ export default function() {
 			circleCenter: { x: 0, y: 0 }, // Kreis für warteschlange mitte
 			circleRadius: 0, // Radius für wateschlangen Kreis
 			maxAirplaneGasoline: 150,
+			gasolineUsage: 0.1,
 			flyspeed: 0.0004,
 			boardingSpeed: 0.05,
 			size: { w: dom.width(), h: dom.height() }
 		},
+		currentMousePos: { x: -1, y: -1 },
+		hoverObject: null,
 		airplanes: [],
 		runways: [],
 		parkingslots: [],
@@ -127,6 +130,14 @@ export default function() {
 		entities.resize();
 		entities.render();
 	});
+
+	// ============================
+	// mouse position
+	// ============================
+    $(document).mousemove(function(event) {
+        storage.currentMousePos.x = event.pageX;
+        storage.currentMousePos.y = event.pageY;
+    });
 
 	// ============================
 	// testweise einen landen lassen

@@ -1,3 +1,5 @@
+import $ from "jquery";
+
 function getRandomArbitrary(min, max) {
 	return Math.random() * (max - min) + min;
 }
@@ -27,6 +29,7 @@ export default function(storage) {
 			pos: { x: 0, y: 0 },
 			size: { w: 40, h: 40},
 			lastPos: { x: 0, y: 0 },
+			isHover: false,
 
 			// in / out
 			incomingDegress,
@@ -47,7 +50,6 @@ export default function(storage) {
 			// loading
 		 	newPassenger: getRandomInt(100,300),
 		 	passenger: getRandomInt(100,300),
-
 
 			// action
 			command: "incoming",
@@ -164,7 +166,7 @@ export default function(storage) {
 			ty = target.y - airplane.pos.y,
 		    dist = Math.sqrt(tx*tx+ty*ty);
 
-		var speed = 1;
+		var speed = (airplane.commandStage == 0)?2:1;
 
 		var velX = (tx/dist)*speed;
 		var velY = (ty/dist)*speed;
@@ -267,7 +269,7 @@ export default function(storage) {
 	// ============================
 	function bye(delta, airplane) {
 		// kreis größer ziehen
-		airplane.currentCircleDistance++;
+		airplane.currentCircleDistance += 2;
 
 		// start position
 		airplane.pos.x = Math.floor(airplane.pos.x + (delta * storage.config.flyspeed) * Math.cos(airplane.currentDegress));
@@ -303,6 +305,7 @@ export default function(storage) {
 		// ============================
 		// position / commands update
 		// ============================
+		var isHover = null;
 		storage.airplanes.forEach((airplane, index) => {
 			// airplane ist kaputt
 			if (airplane.destroyed) {
@@ -325,7 +328,7 @@ export default function(storage) {
 			// sprit berechnung
 			// ============================
 			if (!airplane.onGround) {
-				airplane.gasoline -= 0.01;
+				airplane.gasoline -= storage.config.gasolineUsage;
 
 				// flugzeug leer?
 				if (airplane.gasoline <= 0) {
@@ -346,11 +349,25 @@ export default function(storage) {
 					airplane.viewDirection = Math.atan2(ty, tx) + 90 * Math.PI / 180;
 
 					airplane.lastCalculationAngels = timestamp;
-				}
 
-				// speicher letzte position
-				airplane.lastPos.x = airplane.pos.x;
-				airplane.lastPos.y = airplane.pos.y;
+					// speicher letzte position
+					airplane.lastPos.x = airplane.pos.x;
+					airplane.lastPos.y = airplane.pos.y;
+				}
+			}
+
+			// ============================
+			// is hover?
+			// ============================
+			airplane.isHover = (
+				storage.currentMousePos.x > airplane.pos.x - airplane.size.w &&
+				storage.currentMousePos.y > airplane.pos.y - airplane.size.h &&
+				storage.currentMousePos.x < airplane.pos.x + airplane.size.w &&
+				storage.currentMousePos.y < airplane.pos.y + airplane.size.h
+			);
+
+			if (airplane.isHover) {
+				isHover = airplane;
 			}
 
 			// ============================
@@ -412,6 +429,18 @@ export default function(storage) {
 		// ============================
 		collision();
 
+		// ============================
+		// hover
+		// ============================
+		if (isHover != null) {
+			if (storage.hoverObject == null) {
+				$("body").css("cursor", "pointer");
+			}
+			storage.hoverObject = isHover;
+		} else if (storage.hoverObject != null) {
+			storage.hoverObject = null;
+			$("body").css("cursor", "auto");
+		}
 	}
 
 	return {

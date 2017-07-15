@@ -24,12 +24,12 @@ export default function Chemtrails(storage) {
 		// ============================
 		// Chemtrails
 		// ============================
-		ctx.fillStyle = "rgba(255,255,255,0.5)";
+		ctx.fillStyle = "rgba(255,255,255,0.6)";
 		storage.airplanes.forEach((airplane) => {
 			if (airplane.onGround) {
 				return;
 			}
-			ctx.fillRect(airplane.pos.x, airplane.pos.y, 10, 10);
+			ctx.fillRect(airplane.pos.x, airplane.pos.y, 5, 5);
 		});
 	}
 
