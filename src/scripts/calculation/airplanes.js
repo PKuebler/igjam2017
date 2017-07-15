@@ -34,7 +34,7 @@ export default function(storage) {
 			randomCircleDistance: getRandomInt(0, 60),
 
 			// fly
-			gasoline: 500,
+			gasoline: storage.config.maxAirplaneGasoline,
 			onGround: false,
 			destroyed: false,
 
@@ -157,8 +157,6 @@ export default function(storage) {
 
 		airplane.pos.x += velX;
 		airplane.pos.y += velY;
-
-		console.log(velX, velY, dist);
 	}
 
 	// spawn counter

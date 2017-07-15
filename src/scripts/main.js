@@ -34,6 +34,7 @@ export default function() {
 			spawntime: 2000, // airplane alle 10 sek
 			circleCenter: { x: 0, y: 0 }, // Kreis für warteschlange mitte
 			circleRadius: 0, // Radius für wateschlangen Kreis
+			maxAirplaneGasoline: 500
 		},
 		airplanes: [],
 		runways: [],
