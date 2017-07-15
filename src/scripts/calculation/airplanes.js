@@ -8,12 +8,14 @@ export default function(storage) {
 	}
 
 	function createPlane() {
+		var startAngle = getRandomInt(0, 360);
 		return {
 			name: "Airplane",
 			pos: { x: 5, y: 5 },
-			incomingDegree: 50,
-			outcomingDegree: 180,
-			currentAngle: 50,
+			incomingAngle: startAngle,
+			outcomingAngle: 180,
+			currentAngle: startAngle,
+			currentDistance: 20000,
 			gasoline: 100,
 			randomCircleDistance: getRandomInt(0, 60)
 		}

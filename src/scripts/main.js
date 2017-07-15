@@ -26,7 +26,8 @@ export default function() {
 		config: {
 			spawntime: 2000, // airplane alle 10 sek
 			circleCenter: { x: Math.floor(dom.width()/2), y: Math.floor(dom.height()/2) }, // Kreis für warteschlange mitte
-			circleRadius: Math.floor(((dom.width() < dom.height())?dom.width():dom.height())/2)-80 // Radius für wateschlangen Kreis
+			circleRadius: Math.floor(((dom.width() < dom.height())?dom.width():dom.height())/2)-80, // Radius für wateschlangen Kreis
+			circleRadiusStart: Math.floor(((dom.width() < dom.height())?dom.width():dom.height())),
 		},
 		airplanes: [],
 		runways: [],
@@ -63,6 +64,7 @@ export default function() {
 		storage.config.circleCenter.x = Math.floor(dom.width()/2);
 		storage.config.circleCenter.y = Math.floor(dom.height()/2);
 		storage.config.circleRadius = Math.floor(((dom.width() < dom.height())?dom.width():dom.height())/2)-80; // Radius für wateschlangen Kreis
+		storage.config.circleRadiusStart = Math.floor(((dom.width() < dom.height())?dom.width():dom.height()));
 
 		map.resize();
 		map.render();
