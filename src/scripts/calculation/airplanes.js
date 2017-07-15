@@ -26,6 +26,7 @@ export default function(storage) {
 			name: "Airplane",
 			pos: { x: 0, y: 0 },
 			size: { w: 10, h: 10},
+			lastPos: { x: 0, y: 0 },
 
 			// in / out
 			incomingDegress,
@@ -332,6 +333,20 @@ export default function(storage) {
 					airplane.destroyed = true;
 					return;
 				}
+			}
+			// ============================
+			// Winkel Berechnen
+			// ============================
+			if (airplane.lastPos.x != airplane.pos.x || airplane.lastPos.y != airplane.pos.y) {
+				// hat sich geändert
+
+				var tx = airplane.pos.x - airplane.lastPos.x,
+					ty = airplane.pos.y - airplane.lastPos.y;
+				airplane.viewDirection = Math.atan2(ty, tx) + 90 * Math.PI / 180;
+
+				// speicher letzte position
+				airplane.lastPos.x = airplane.pos.x;
+				airplane.lastPos.y = airplane.pos.y;
 			}
 
 			// ============================
