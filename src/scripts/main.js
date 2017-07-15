@@ -4,7 +4,9 @@ import Entities from "./graphics/entities.js";
 import Airplanes from "./calculation/airplanes.js";
 import Places from "./calculation/places.js";
 
-// Fallback
+// ============================
+// fallback
+// ============================
 window.requestAnimFrame = (() => {
 	return (
 		window.requestAnimationFrame ||
@@ -18,17 +20,20 @@ window.requestAnimFrame = (() => {
 	);
 })();
 
-// eigentliches Game
+// ============================
+// eigentliche spiel
+// ============================
 export default function() {
 	const dom = $(".wrapper");
 
-	// Enthält alle Daten fürs Spiel
+	// ============================
+	// enthält die spieldaten, wird überall hin übergeben
+	// ============================
 	var storage = {
 		config: {
 			spawntime: 2000, // airplane alle 10 sek
 			circleCenter: { x: 0, y: 0 }, // Kreis für warteschlange mitte
 			circleRadius: 0, // Radius für wateschlangen Kreis
-			circleRadiusStart: 0,
 		},
 		airplanes: [],
 		runways: [],
@@ -36,7 +41,9 @@ export default function() {
 		gates: []
 	};
 
-	// Berechne Fix Werte
+	// ============================
+	// berechne die position, falls resize oder neu
+	// ============================
 	function updateStorage() {
 		// warteschleifen
 		storage.config.circleCenter.x = Math.floor(dom.width()/2);
@@ -46,18 +53,27 @@ export default function() {
 	}
 	updateStorage();
 
+	// ============================
 	// Erzeugt die Grafik Layer
+	// ============================
 	var map = Map(storage);
 	var entities = Entities(storage);
 
+	// ============================
 	// Erzeuge Logik
+	// ============================
 	var airplanes = Airplanes(storage);
 	var places = Places(storage);
 
+	// ============================
 	// füge einen platz hinzu
+	// ============================
+	// todo: anpassen an browsergröße?
 	storage.runways.push(places.createRunway(Math.floor(dom.width()/2)-100, Math.floor(dom.width()/2)-25, 90 * Math.PI / 180));
 
+	// ============================
 	// Erzeuge Gameloop
+	// ============================
 	function tick(timestamp) {
 		// Tick
 
@@ -70,10 +86,14 @@ export default function() {
 		requestAnimationFrame(tick);
 	}
 
+	// ============================
 	// start
+	// ============================
 	tick();
 
+	// ============================
 	// resize vom Browser
+	// ============================
 	$(window).resize(function() {
 		// zeichne neu
 		updateStorage();
@@ -84,6 +104,9 @@ export default function() {
 		entities.render();
 	});
 
+	// ============================
+	// testweise einen landen lassen
+	// ============================
 	setInterval(() => {
 		if (storage.airplanes[0].command == "circle") {
 			storage.airplanes[0].command = "goLanding";

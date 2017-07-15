@@ -17,7 +17,7 @@ export default function(storage) {
 		var outcomingDegress = getRandomArbitrary(0, 360 * Math.PI / 180);
 
 		// start entfernung
-		var currentCircleDistance = 800;
+		var currentCircleDistance = 600;
 
 		return {
 			name: "Airplane",
