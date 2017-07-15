@@ -224,6 +224,7 @@ export default function(storage) {
 			airplane.passenger = Math.min(airplane.newPassenger, airplane.passenger+(delta*storage.config.boardingSpeed));
 			if (airplane.passenger == airplane.newPassenger) {
 				// finish
+				airplane.gasoline = storage.config.maxAirplaneGasoline;
 				airplane.commandStage = 2;
 			}
 		}
@@ -433,6 +434,28 @@ export default function(storage) {
 		// ============================
 		// hover
 		// ============================
+		if (isHover == null) {
+			storage.gates.forEach((gate) => {
+				if (storage.currentMousePos.x > gate.pos.x - 25 &&
+					storage.currentMousePos.y > gate.pos.y - 25 &&
+					storage.currentMousePos.x < gate.pos.x + 25 &&
+					storage.currentMousePos.y < gate.pos.y + 25) {
+					isHover = gate;
+				}
+			});
+		}
+
+		if (isHover == null) {
+			storage.runways.forEach((runway) => {
+				if (storage.currentMousePos.x > runway.pos.x - 25 &&
+					storage.currentMousePos.y > runway.pos.y - 100 &&
+					storage.currentMousePos.x < runway.pos.x + 25 &&
+					storage.currentMousePos.y < runway.pos.y + 100) {
+					isHover = runway;
+				}
+			});
+		}
+
 		if (isHover != null) {
 			if (storage.hoverObject == null) {
 				$("body").css("cursor", "pointer");

@@ -84,9 +84,9 @@ export default function() {
 	// ============================
 	// todo: anpassen an browsergröße?
 	storage.runways.push(places.createRunway(0, Math.floor(dom.width()/2)-120, Math.floor(dom.height()/2), 90 * Math.PI / 180));
-	storage.gates.push(places.createGate(0, Math.floor(dom.width()/2)+50, Math.floor(dom.height()/2)-75, 0));
-	storage.gates.push(places.createGate(1, Math.floor(dom.width()/2)+50, Math.floor(dom.height()/2), 0));
-	storage.gates.push(places.createGate(2, Math.floor(dom.width()/2)+50, Math.floor(dom.height()/2)+75, 0));
+	storage.gates.push(places.createGate(0, Math.floor(dom.width()/2)+100, Math.floor(dom.height()/2)-75, 0));
+	storage.gates.push(places.createGate(1, Math.floor(dom.width()/2)+100, Math.floor(dom.height()/2), 0));
+	storage.gates.push(places.createGate(2, Math.floor(dom.width()/2)+100, Math.floor(dom.height()/2)+75, 0));
 
 	// ============================
 	// update map
@@ -144,6 +144,7 @@ export default function() {
     $(document).on('click', function(event) {
 	    if (event.which == 1) {
 	    	if (storage.hoverObject != null) {
+	    		console.log(storage.hoverObject);
 
 	    		// Flugzeug oder Leer => Flugzeug
 	    		if (storage.hoverObject.type == "airplane" && (storage.selectedObject == null || storage.selectedObject.type == "airplane")) {

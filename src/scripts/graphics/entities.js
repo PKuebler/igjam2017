@@ -75,6 +75,12 @@ export default function Entities(storage) {
 				ctx.beginPath();
 				ctx.rect(airplane.pos.x + 35, airplane.pos.y - 20, 7, 20);			
 				ctx.stroke();
+			} else if (airplane.command == "boarding") {
+				var h = Math.floor((airplane.passenger / airplane.newPassenger) * 20);
+				ctx.fillRect(airplane.pos.x + 35, airplane.pos.y - h, 7, h);
+				ctx.beginPath();
+				ctx.rect(airplane.pos.x + 35, airplane.pos.y - 20, 7, 20);			
+				ctx.stroke();				
 			}
 		});
 
