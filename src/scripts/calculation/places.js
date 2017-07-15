@@ -7,7 +7,7 @@ export default function Places(storage) {
 	function createObject(x,y,a) {
 		return {
 			pos: {x, y},
-			a: a // angle
+			a: a // angle 
 		};
 	}
 
