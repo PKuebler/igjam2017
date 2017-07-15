@@ -72,6 +72,12 @@ export default function() {
 	storage.runways.push(places.createRunway(Math.floor(dom.width()/2)-100, Math.floor(dom.width()/2)-25, 90 * Math.PI / 180));
 
 	// ============================
+	// update map
+	// ============================
+	map.resize();
+	map.render();
+
+	// ============================
 	// Erzeuge Gameloop
 	// ============================
 	function tick(timestamp) {
