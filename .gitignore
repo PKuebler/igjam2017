@@ -1,7 +1,7 @@
 
 # Created by https://www.gitignore.io/api/osx,node,linux,macos,windows,sublimetext
 
-dist/media/bundle.js
+bundle.js
 
 ### Linux ###
 *~

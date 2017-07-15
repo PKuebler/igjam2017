@@ -23,27 +23,69 @@ export default function Map(storage) {
 		// ============================
 		// landebahn
 		// ============================
-		ctx.fillStyle = "rgb(52,109,226)";
+		ctx.strokeStyle = "rgb(255,255,255)";
 		storage.runways.forEach((runway) => {
 			ctx.save();
 			// todo: bugfix rotation
 			ctx.translate(runway.pos.x, runway.pos.y);
 			ctx.rotate(runway.a);
-			ctx.fillRect(-100, -25, 200, 50);
+			ctx.beginPath();
+			ctx.rect(-100, -25, 200, 50);
+			ctx.moveTo(-95, -20);
+			ctx.lineTo(-85, -20);
+			ctx.moveTo(-95, -15);
+			ctx.lineTo(-85, -15);
+			ctx.moveTo(-95, -10);
+			ctx.lineTo(-85, -10);
+			ctx.moveTo(-95, -5);
+			ctx.lineTo(-85, -5);
+			ctx.moveTo(-95, 0);
+			ctx.lineTo(-85, 0);
+			ctx.moveTo(-95, 20);
+			ctx.lineTo(-85, 20);
+			ctx.moveTo(-95, 15);
+			ctx.lineTo(-85, 15);
+			ctx.moveTo(-95, 10);
+			ctx.lineTo(-85, 10);
+			ctx.moveTo(-95, 5);
+			ctx.lineTo(-85, 5);
+			ctx.moveTo(-75, 0);
+			ctx.lineTo(-65, 0);
+			ctx.moveTo(-55, 0);
+			ctx.lineTo(-45, 0);
+			ctx.moveTo(-35, 0);
+			ctx.lineTo(-25, 0);
+			ctx.moveTo(-15, 0);
+			ctx.lineTo(-5, 0);
+			ctx.moveTo(95, 0);
+			ctx.lineTo(85, 0);
+			ctx.moveTo(75, 0);
+			ctx.lineTo(65, 0);
+			ctx.moveTo(55, 0);
+			ctx.lineTo(45, 0);
+			ctx.moveTo(35, 0);
+			ctx.lineTo(25, 0);
+			ctx.moveTo(15, 0);
+			ctx.lineTo(5, 0);
+			ctx.stroke();
 			ctx.restore();
 		});
 
 		// ============================
+		// gates
 		// ============================
-		var angle = 0.02;
-		var x = Math.floor(storage.config.circleCenter.x + (storage.config.circleRadius) * Math.cos(angle));
-		var y = Math.floor(storage.config.circleCenter.y + (storage.config.circleRadius) * Math.sin(angle));
 		ctx.strokeStyle = "#ffa500";
-		ctx.lineWidth = 4;
-		ctx.beginPath();
-		ctx.moveTo(storage.config.circleCenter.x, storage.config.circleCenter.y);
-		ctx.lineTo(x, y);
-		ctx.stroke();
+		ctx.lineWidth = 2;
+		storage.gates.forEach((gate) => {
+			ctx.save();
+			// todo: bugfix rotation
+			ctx.translate(gate.pos.x, gate.pos.y);
+			ctx.rotate(gate.a);
+			ctx.beginPath();
+			ctx.rect(-25, -25, 50, 50);
+			ctx.stroke();
+			ctx.restore();
+		});
 	}
 
 	// ============================
