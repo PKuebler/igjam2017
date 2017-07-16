@@ -23,7 +23,7 @@ export default function Map(storage) {
 		// ============================
 		// landebahn
 		// ============================
-		ctx.textBaseline="top"; 
+		ctx.textBaseline="top";
 		ctx.font="10px 'Press Start 2P'";
 		ctx.strokeStyle = "rgb(255,255,255)";
 		ctx.fillStyle = "rgb(255,255,255)";
@@ -92,8 +92,21 @@ export default function Map(storage) {
 			ctx.stroke();
 			ctx.restore();
 		});
-	}
+		// ============================
+		// Credits
+		// ============================
+		//ctx.canvas.width
+		//ctx.canvas.height
 
+		ctx.lineWidth = 2;
+		ctx.fillStyle = "#7EBAFF";
+		ctx.font="22.4px 'Press Start 2P'";
+		ctx.fillText("FlightControl", ctx.canvas.width - 340, ctx.canvas.height - 80);
+		ctx.font="10px 'Press Start 2P'";
+		ctx.fillStyle = "#7EDFFF";
+		ctx.fillText("Philipp Kübler, Michael Seitz", ctx.canvas.width - 340, ctx.canvas.height - 50);
+		ctx.stroke();
+	}
 	// ============================
 	// Init
 	// ============================
